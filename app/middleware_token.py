@@ -4,7 +4,7 @@ from app.security import verify_access_token
 
 
 PROTECTED_PREFIXES = ("/admin",)
-EXEMPT_PATHS = {"/healthz", "/auth/login"}
+EXEMPT_PATHS = {"/healthz", "/auth/login", "/auth/validate", "/admin"}
 
 class BearerAuthASGIMiddleware:
     """
@@ -33,6 +33,10 @@ class BearerAuthASGIMiddleware:
         # (Optional) attach identity to scope for downstream use
         scope.setdefault("state", {})
         scope["state"]["user"] = payload.get("sub")
+        
+        # Debug: Print what we're attaching
+        print(f"Middleware: Attaching user {payload.get('sub')} to scope state")
+        print(f"Middleware: Scope state after attachment: {scope.get('state')}")
 
         return await self.app(scope, receive, send)
 
