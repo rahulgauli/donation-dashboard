@@ -244,7 +244,6 @@ async def get_dashboard_data(authorization: Optional[str] = Header(None)):
                 "total_donations": 0,
                 "total_amount": 0,
                 "active_donors": 0,
-                "this_month": 0,
                 "recent_activity": [],
                 "top_donors": [],
                 "monthly_trend": []
@@ -257,7 +256,6 @@ async def get_dashboard_data(authorization: Optional[str] = Header(None)):
                 "total_donations": 0,
                 "total_amount": 0,
                 "active_donors": 0,
-                "this_month": 0,
                 "recent_activity": [],
                 "top_donors": [],
                 "monthly_trend": []
@@ -276,7 +274,6 @@ async def get_dashboard_data(authorization: Optional[str] = Header(None)):
                 "total_donations": 0,
                 "total_amount": 0,
                 "active_donors": 0,
-                "this_month": 0,
                 "recent_activity": [],
                 "top_donors": [],
                 "monthly_trend": []
@@ -286,18 +283,6 @@ async def get_dashboard_data(authorization: Optional[str] = Header(None)):
         total_donations = len(donations_data)
         total_amount = sum(float(donation.get('Amount', 0)) for donation in donations_data)
         active_donors = len(set(donation.get('Donor_Name', '') for donation in donations_data if donation.get('Donor_Name')))
-        
-        # Calculate this month's donations
-        current_month = datetime.now().month
-        current_year = datetime.now().year
-        this_month = 0
-        for donation in donations_data:
-            try:
-                donation_date = datetime.strptime(donation.get('Date', ''), '%Y-%m-%d')
-                if donation_date.month == current_month and donation_date.year == current_year:
-                    this_month += float(donation.get('Amount', 0))
-            except:
-                continue
         
         # Get recent activity (last 5 donations)
         recent_activity = []
@@ -342,7 +327,6 @@ async def get_dashboard_data(authorization: Optional[str] = Header(None)):
             "total_donations": total_donations,
             "total_amount": round(total_amount, 2),
             "active_donors": active_donors,
-            "this_month": round(this_month, 2),
             "recent_activity": recent_activity,
             "top_donors": top_donors,
             "monthly_trend": monthly_trend,
@@ -374,7 +358,7 @@ async def login_page():
         <style>
             body {
                 font-family: Arial, sans-serif;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #2E8B57 0%, #3CB371 25%, #20B2AA 50%, #48D1CC 75%, #40E0D0 100%);
                 margin: 0;
                 padding: 0;
                 display: flex;
@@ -383,21 +367,25 @@ async def login_page():
                 min-height: 100vh;
             }
             .login-container {
-                background: white;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(15px);
                 padding: 2rem;
-                border-radius: 10px;
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(46, 139, 87, 0.3);
                 width: 100%;
                 max-width: 400px;
+                border: 1px solid rgba(255, 255, 255, 0.3);
             }
             .login-header {
                 text-align: center;
                 margin-bottom: 2rem;
             }
             .login-header h1 {
-                color: #333;
+                color: #2E8B57;
                 margin: 0;
                 font-size: 2rem;
+                font-weight: 700;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
             }
             .form-group {
                 margin-bottom: 1.5rem;
@@ -405,36 +393,40 @@ async def login_page():
             .form-group label {
                 display: block;
                 margin-bottom: 0.5rem;
-                color: #555;
-                font-weight: 500;
+                color: #2E8B57;
+                font-weight: 600;
             }
             .form-group input {
                 width: 100%;
                 padding: 0.75rem;
                 border: 2px solid #e1e5e9;
-                border-radius: 5px;
+                border-radius: 10px;
                 font-size: 1rem;
                 box-sizing: border-box;
-                transition: border-color 0.3s ease;
+                transition: all 0.3s ease;
+                background: rgba(255, 255, 255, 0.9);
             }
             .form-group input:focus {
                 outline: none;
-                border-color: #667eea;
+                border-color: #2E8B57;
+                box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.1);
             }
             .login-btn {
                 width: 100%;
                 padding: 0.75rem;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
                 color: white;
                 border: none;
-                border-radius: 5px;
+                border-radius: 10px;
                 font-size: 1rem;
                 font-weight: 600;
                 cursor: pointer;
-                transition: transform 0.2s ease;
+                transition: all 0.3s ease;
+                box-shadow: 0 6px 20px rgba(46, 139, 87, 0.3);
             }
             .login-btn:hover {
                 transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(46, 139, 87, 0.4);
             }
             .login-btn:disabled {
                 opacity: 0.6;
@@ -446,12 +438,38 @@ async def login_page():
                 text-align: center;
                 margin-top: 1rem;
                 display: none;
+                padding: 10px;
+                border-radius: 8px;
+                background: rgba(231, 76, 60, 0.1);
+                border: 1px solid rgba(231, 76, 60, 0.3);
             }
             .success-message {
                 color: #27ae60;
                 text-align: center;
                 margin-top: 1rem;
                 display: none;
+                padding: 10px;
+                border-radius: 8px;
+                background: rgba(39, 174, 96, 0.1);
+                border: 1px solid rgba(39, 174, 96, 0.3);
+            }
+            .loading-container {
+                display: none;
+                text-align: center;
+                margin-top: 1rem;
+            }
+            .loading-spinner {
+                width: 30px;
+                height: 30px;
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid #2E8B57;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 10px auto;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
             }
         </style>
     </head>
@@ -473,9 +491,50 @@ async def login_page():
             </form>
             <div id="errorMessage" class="error-message"></div>
             <div id="successMessage" class="success-message"></div>
+            <div id="loadingContainer" class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Checking authentication...</p>
+            </div>
         </div>
 
         <script>
+            // Check for existing authentication on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                const token = localStorage.getItem('authToken');
+                if (token) {
+                    // Show loading state
+                    document.getElementById('loadingContainer').style.display = 'block';
+                    document.getElementById('loginForm').style.display = 'none';
+                    
+                    // Validate the existing token
+                    fetch('/auth/validate', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Token is valid, redirect to admin portal
+                            window.location.href = '/admin';
+                        } else {
+                            // Token is invalid, clear it and show login form
+                            localStorage.removeItem('authToken');
+                            document.getElementById('loadingContainer').style.display = 'none';
+                            document.getElementById('loginForm').style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Token validation error:', error);
+                        // Error occurred, clear token and show login form
+                        localStorage.removeItem('authToken');
+                        document.getElementById('loadingContainer').style.display = 'none';
+                        document.getElementById('loginForm').style.display = 'block';
+                    });
+                }
+            });
+
             document.getElementById('loginForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -534,3 +593,597 @@ async def login_page():
     </html>
     """
     return HTMLResponse(content=html_content)
+
+@app.get("/public-dashboard", response_class=HTMLResponse)
+async def public_dashboard():
+    """Public dashboard that anyone can view without authentication."""
+    try:
+        data_dir = "data"
+        if not os.path.exists(data_dir):
+            return HTMLResponse(content="""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Donations Dashboard</title>
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        margin: 0;
+                        padding: 20px;
+                        min-height: 100vh;
+                        color: #333;
+                    }
+                    .container {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                        background: white;
+                        border-radius: 15px;
+                        padding: 30px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+                    .header h1 {
+                        color: #333;
+                        font-size: 2.5rem;
+                        margin-bottom: 10px;
+                    }
+                    .header p {
+                        color: #666;
+                        font-size: 1.2rem;
+                    }
+                    .no-data {
+                        text-align: center;
+                        padding: 50px;
+                        color: #666;
+                    }
+                    .no-data h2 {
+                        color: #333;
+                        margin-bottom: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Donations Dashboard</h1>
+                        <p>Transparency in giving</p>
+                    </div>
+                    <div class="no-data">
+                        <h2>No donation data available</h2>
+                        <p>Check back later for updates on our donation activities.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """)
+        
+        # Get the most recent JSON file
+        json_files = [f for f in os.listdir(data_dir) if f.endswith('.json')]
+        if not json_files:
+            return HTMLResponse(content="""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Donations Dashboard</title>
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        margin: 0;
+                        padding: 20px;
+                        min-height: 100vh;
+                        color: #333;
+                    }
+                    .container {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                        background: white;
+                        border-radius: 15px;
+                        padding: 30px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+                    .header h1 {
+                        color: #333;
+                        font-size: 2.5rem;
+                        margin-bottom: 10px;
+                    }
+                    .header p {
+                        color: #666;
+                        font-size: 1.2rem;
+                    }
+                    .no-data {
+                        text-align: center;
+                        padding: 50px;
+                        color: #666;
+                    }
+                    .no-data h2 {
+                        color: #333;
+                        margin-bottom: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Donations Dashboard</h1>
+                        <p>Transparency in giving</p>
+                    </div>
+                    <div class="no-data">
+                        <h2>No donation data available</h2>
+                        <p>Check back later for updates on our donation activities.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """)
+        
+        # Sort by creation time (newest first)
+        json_files.sort(key=lambda x: os.path.getctime(os.path.join(data_dir, x)), reverse=True)
+        latest_file = json_files[0]
+        
+        # Read the JSON file
+        with open(os.path.join(data_dir, latest_file), 'r') as f:
+            donations_data = json.load(f)
+        
+        if not donations_data:
+            return HTMLResponse(content="""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Donations Dashboard</title>
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        margin: 0;
+                        padding: 20px;
+                        min-height: 100vh;
+                        color: #333;
+                    }
+                    .container {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                        background: white;
+                        border-radius: 15px;
+                        padding: 30px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+                    .header h1 {
+                        color: #333;
+                        font-size: 2.5rem;
+                        margin-bottom: 10px;
+                    }
+                    .header p {
+                        color: #666;
+                        font-size: 1.2rem;
+                    }
+                    .no-data {
+                        text-align: center;
+                        padding: 50px;
+                        color: #666;
+                    }
+                    .no-data h2 {
+                        color: #333;
+                        margin-bottom: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Donations Dashboard</h1>
+                        <p>Transparency in giving</p>
+                    </div>
+                    <div class="no-data">
+                        <h2>No donation data available</h2>
+                        <p>Check back later for updates on our donation activities.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """)
+        
+        # Process the data
+        total_donations = len(donations_data)
+        total_amount = sum(float(donation.get('Amount', 0)) for donation in donations_data)
+        active_donors = len(set(donation.get('Donor_Name', '') for donation in donations_data if donation.get('Donor_Name')))
+        
+        # Get recent activity (last 5 donations)
+        recent_activity = []
+        for donation in donations_data[-5:]:
+            recent_activity.append({
+                "message": f"${donation.get('Amount', 0)} from {donation.get('Donor_Name', 'Anonymous')}",
+                "date": donation.get('Date', ''),
+                "amount": float(donation.get('Amount', 0))
+            })
+        
+        # Get top donors
+        donor_totals = {}
+        for donation in donations_data:
+            donor_name = donation.get('Donor_Name', 'Anonymous')
+            amount = float(donation.get('Amount', 0))
+            donor_totals[donor_name] = donor_totals.get(donor_name, 0) + amount
+        
+        top_donors = sorted(donor_totals.items(), key=lambda x: x[1], reverse=True)[:5]
+        top_donors = [{"name": name, "total": total} for name, total in top_donors]
+        
+        # Calculate monthly trend (last 6 months)
+        monthly_trend = []
+        for i in range(6):
+            month_date = datetime.now().replace(day=1) - timedelta(days=30*i)
+            month_total = 0
+            for donation in donations_data:
+                try:
+                    donation_date = datetime.strptime(donation.get('Date', ''), '%Y-%m-%d')
+                    if donation_date.month == month_date.month and donation_date.year == month_date.year:
+                        month_total += float(donation.get('Amount', 0))
+                except:
+                    continue
+            monthly_trend.append({
+                "month": month_date.strftime('%b %Y'),
+                "amount": month_total
+            })
+        
+        monthly_trend.reverse()  # Show oldest to newest
+        
+        # Calculate bar heights for monthly trend
+        max_amount = max([month["amount"] for month in monthly_trend]) if monthly_trend else 1
+        trend_bars = []
+        for month in monthly_trend:
+            height = int((month["amount"] / max_amount) * 60) if max_amount > 0 else 0
+            trend_bars.append(f'<div style="display: flex; flex-direction: column; align-items: center;"><div class="trend-bar" style="height: {height}px; width: 20px;" title="{month["month"]}: ${month["amount"]:,.2f}"></div><div class="trend-label">{month["month"]}</div></div>')
+        
+        # Create the HTML content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Public Donations Dashboard</title>
+            <style>
+                * {{
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }}
+                
+                body {{
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, #2E8B57 0%, #3CB371 25%, #20B2AA 50%, #48D1CC 75%, #40E0D0 100%);
+                    min-height: 100vh;
+                    color: #2c3e50;
+                    padding: 15px;
+                }}
+                
+                .container {{
+                    max-width: 1000px;
+                    margin: 0 auto;
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(15px);
+                    border-radius: 20px;
+                    padding: 30px;
+                    box-shadow: 0 15px 40px rgba(46, 139, 87, 0.25);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                }}
+                
+                .header {{
+                    text-align: center;
+                    margin-bottom: 25px;
+                    padding-bottom: 20px;
+                    border-bottom: 2px solid #3CB371;
+                    position: relative;
+                }}
+                
+                .header::before {{
+                    content: '🌱';
+                    position: absolute;
+                    top: 0;
+                    right: 25px;
+                    font-size: 1.8rem;
+                    opacity: 0.3;
+                }}
+                
+                .header h1 {{
+                    color: #2E8B57;
+                    font-size: 2.2rem;
+                    font-weight: 700;
+                    margin-bottom: 10px;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+                }}
+                
+                .header p {{
+                    color: #34495e;
+                    font-size: 1rem;
+                    font-weight: 500;
+                }}
+                
+                .stats-grid {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 20px;
+                    margin-bottom: 25px;
+                }}
+                
+                .stat-card {{
+                    background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
+                    color: white;
+                    padding: 25px;
+                    border-radius: 15px;
+                    text-align: center;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 8px 25px rgba(46, 139, 87, 0.25);
+                    position: relative;
+                    overflow: hidden;
+                }}
+                
+                .stat-card::before {{
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 3px;
+                    background: linear-gradient(90deg, #20B2AA, #48D1CC, #40E0D0);
+                }}
+                
+                .stat-card:hover {{
+                    transform: translateY(-5px) scale(1.02);
+                    box-shadow: 0 12px 30px rgba(46, 139, 87, 0.35);
+                }}
+                
+                .stat-number {{
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    margin-bottom: 10px;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+                }}
+                
+                .stat-label {{
+                    font-size: 0.9rem;
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                    opacity: 0.9;
+                    font-weight: 500;
+                }}
+                
+                .content-section {{
+                    background: linear-gradient(135deg, rgba(46, 139, 87, 0.03) 0%, rgba(60, 179, 113, 0.03) 100%);
+                    padding: 25px;
+                    border-radius: 15px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 5px 20px rgba(46, 139, 87, 0.1);
+                    border: 1px solid rgba(46, 139, 87, 0.08);
+                }}
+                
+                .section-title {{
+                    font-size: 1.4rem;
+                    margin-bottom: 20px;
+                    color: #2E8B57;
+                    border-bottom: 2px solid #3CB371;
+                    padding-bottom: 10px;
+                    font-weight: 600;
+                    text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
+                }}
+                
+                .activity-item {{
+                    background: rgba(255, 255, 255, 0.8);
+                    padding: 15px;
+                    margin-bottom: 10px;
+                    border-radius: 10px;
+                    border-left: 3px solid #2E8B57;
+                    box-shadow: 0 2px 8px rgba(46, 139, 87, 0.08);
+                    transition: all 0.2s ease;
+                    font-size: 0.9rem;
+                }}
+                
+                .activity-item:hover {{
+                    transform: translateX(3px);
+                    box-shadow: 0 4px 12px rgba(46, 139, 87, 0.15);
+                }}
+                
+                .donor-item {{
+                    background: rgba(255, 255, 255, 0.8);
+                    padding: 15px;
+                    margin-bottom: 10px;
+                    border-radius: 10px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    box-shadow: 0 2px 8px rgba(46, 139, 87, 0.08);
+                    transition: all 0.2s ease;
+                    font-size: 0.9rem;
+                }}
+                
+                .donor-item:hover {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(46, 139, 87, 0.15);
+                }}
+                
+                .donor-rank {{
+                    font-size: 1.5rem;
+                    margin-right: 15px;
+                }}
+                
+                .monthly-trend {{
+                    display: flex;
+                    align-items: end;
+                    gap: 12px;
+                    height: 80px;
+                    margin-top: 15px;
+                }}
+                
+                .trend-bar {{
+                    background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
+                    border-radius: 6px 6px 0 0;
+                    min-width: 20px;
+                    position: relative;
+                    transition: all 0.2s ease;
+                    box-shadow: 0 2px 8px rgba(46, 139, 87, 0.2);
+                }}
+                
+                .trend-bar:hover {{
+                    transform: scaleY(1.1);
+                    box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
+                }}
+                
+                .trend-label {{
+                    font-size: 0.75rem;
+                    color: #2E8B57;
+                    text-align: center;
+                    margin-top: 8px;
+                    font-weight: 500;
+                }}
+                
+                .footer {{
+                    text-align: center;
+                    margin-top: 25px;
+                    padding-top: 20px;
+                    border-top: 2px solid #3CB371;
+                    color: #2E8B57;
+                    font-size: 0.85rem;
+                    font-weight: 500;
+                }}
+                
+                @media (max-width: 768px) {{
+                    .container {{
+                        padding: 20px;
+                    }}
+                    
+                    .header h1 {{
+                        font-size: 1.8rem;
+                    }}
+                    
+                    .stats-grid {{
+                        grid-template-columns: 1fr;
+                    }}
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Donations Dashboard</h1>
+                    <p>Transparency in giving - Latest donation activities</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">{total_donations:,}</div>
+                        <div class="stat-label">Total Donations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${total_amount:,.2f}</div>
+                        <div class="stat-label">Total Amount</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{active_donors:,}</div>
+                        <div class="stat-label">Active Donors</div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Recent Donations</h3>
+                    {''.join([f'<div class="activity-item"><strong>{activity["message"]}</strong><br><small>Date: {activity["date"]}</small></div>' for activity in recent_activity])}
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Top Donors</h3>
+                    {''.join([f'<div class="donor-item"><div><span class="donor-rank">{chr(127941 + i) if i < 3 else "🏅"}</span><strong>{donor["name"]}</strong></div><div>${donor["total"]:,.2f}</div></div>' for i, donor in enumerate(top_donors)])}
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Monthly Trend</h3>
+                    <div class="monthly-trend">
+                        {''.join(trend_bars)}
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>Last updated: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</p>
+                    <p>Data source: {latest_file}</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        return HTMLResponse(content=html_content)
+        
+    except Exception as e:
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Donations Dashboard</title>
+            <style>
+                body {{
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    margin: 0;
+                    padding: 20px;
+                    min-height: 100vh;
+                    color: #333;
+                }}
+                .container {{
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    background: white;
+                    border-radius: 15px;
+                    padding: 30px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                }}
+                .header {{
+                    text-align: center;
+                    margin-bottom: 30px;
+                }}
+                .header h1 {{
+                    color: #333;
+                    font-size: 2.5rem;
+                    margin-bottom: 10px;
+                }}
+                .error {{
+                    text-align: center;
+                    padding: 50px;
+                    color: #666;
+                }}
+                .error h2 {{
+                    color: #e74c3c;
+                    margin-bottom: 20px;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Donations Dashboard</h1>
+                    <p>Transparency in giving</p>
+                </div>
+                <div class="error">
+                    <h2>Error Loading Data</h2>
+                    <p>We're experiencing technical difficulties. Please try again later.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """)

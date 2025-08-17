@@ -47,9 +47,9 @@ async def admin_portal(request: Request):
             
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #2E8B57 0%, #3CB371 25%, #20B2AA 50%, #48D1CC 75%, #40E0D0 100%);
                 min-height: 100vh;
-                color: #333;
+                color: #2c3e50;
             }
             
             .loading-container {
@@ -121,191 +121,268 @@ async def admin_portal(request: Request):
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 20px;
-                display: none;
             }
             
             .header {
-                background: white;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                margin-bottom: 20px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 25px;
+                border-radius: 20px;
+                box-shadow: 0 8px 32px rgba(46, 139, 87, 0.2);
+                margin-bottom: 25px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                border: 1px solid rgba(255, 255, 255, 0.3);
             }
             
             .header h1 {
-                color: #333;
-                font-size: 2rem;
-                font-weight: 600;
+                color: #2E8B57;
+                font-size: 2.2rem;
+                font-weight: 700;
+                margin: 0;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
             }
             
             .user-info {
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 15px;
             }
             
             .user-avatar {
-                width: 40px;
-                height: 40px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: white;
                 font-weight: bold;
-                font-size: 1.2rem;
+                font-size: 1.3rem;
+                box-shadow: 0 4px 15px rgba(46, 139, 87, 0.3);
+                border: 3px solid rgba(255, 255, 255, 0.8);
             }
             
             .logout-btn {
-                background: #e74c3c;
+                background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
                 color: white;
                 border: none;
-                padding: 8px 16px;
-                border-radius: 5px;
+                padding: 10px 20px;
+                border-radius: 25px;
                 cursor: pointer;
                 font-size: 0.9rem;
-                transition: background 0.3s ease;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
             }
             
             .logout-btn:hover {
-                background: #c0392b;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
             }
             
             .stats-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 20px;
-                margin-bottom: 30px;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 25px;
+                margin-bottom: 35px;
             }
             
             .stat-card {
-                background: white;
-                padding: 25px;
-                border-radius: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 30px;
+                border-radius: 20px;
                 text-align: center;
-                transition: transform 0.3s ease;
+                transition: all 0.4s ease;
+                box-shadow: 0 8px 32px rgba(46, 139, 87, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #2E8B57, #3CB371, #20B2AA, #48D1CC);
+            }
+            
+            .stat-card::after {
+                content: '🌿';
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                font-size: 1.5rem;
+                opacity: 0.2;
+                animation: float 4s ease-in-out infinite;
             }
             
             .stat-card:hover {
-                transform: translateY(-5px);
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 15px 40px rgba(46, 139, 87, 0.25);
+            }
+            
+            .stat-card:hover::after {
+                animation: pulse 1s ease-in-out infinite;
             }
             
             .stat-number {
-                font-size: 2.5rem;
-                font-weight: bold;
-                color: #667eea;
-                margin-bottom: 10px;
+                font-size: 3rem;
+                font-weight: 800;
+                color: #2E8B57;
+                margin-bottom: 15px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
             }
             
             .stat-label {
-                color: #666;
-                font-size: 1rem;
+                color: #34495e;
+                font-size: 1.1rem;
                 text-transform: uppercase;
-                letter-spacing: 1px;
+                letter-spacing: 2px;
+                font-weight: 600;
             }
             
             .content-section {
-                background: white;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                margin-bottom: 20px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 35px;
+                border-radius: 20px;
+                margin-bottom: 25px;
+                box-shadow: 0 8px 32px rgba(46, 139, 87, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.3);
             }
             
             .section-title {
-                font-size: 1.5rem;
-                margin-bottom: 20px;
-                color: #333;
-                border-bottom: 2px solid #f0f0f0;
-                padding-bottom: 10px;
+                font-size: 1.8rem;
+                margin-bottom: 25px;
+                color: #2E8B57;
+                border-bottom: 3px solid #3CB371;
+                padding-bottom: 15px;
+                font-weight: 700;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
             }
             
             .action-buttons {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
-                margin-top: 20px;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 20px;
+                margin-top: 25px;
             }
             
             .action-btn {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
                 color: white;
                 border: none;
-                padding: 15px 20px;
-                border-radius: 8px;
+                padding: 18px 25px;
+                border-radius: 15px;
                 cursor: pointer;
                 font-size: 1rem;
-                font-weight: 500;
+                font-weight: 600;
                 transition: all 0.3s ease;
                 text-decoration: none;
                 display: inline-block;
                 text-align: center;
+                box-shadow: 0 6px 20px rgba(46, 139, 87, 0.3);
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .action-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s;
+            }
+            
+            .action-btn:hover::before {
+                left: 100%;
             }
             
             .action-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(46, 139, 87, 0.4);
             }
             
             .action-btn.secondary {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                background: linear-gradient(135deg, #20B2AA 0%, #48D1CC 100%);
             }
             
             .action-btn.success {
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             }
             
             .action-btn.warning {
-                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+                background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
             }
             
             .welcome-message {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
                 color: white;
-                padding: 20px;
-                border-radius: 10px;
-                margin-bottom: 20px;
+                padding: 30px;
+                border-radius: 20px;
+                margin-bottom: 25px;
                 text-align: center;
+                box-shadow: 0 8px 32px rgba(46, 139, 87, 0.3);
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .welcome-message::before {
+                content: '🌱';
+                position: absolute;
+                top: 10px;
+                right: 20px;
+                font-size: 2rem;
+                opacity: 0.3;
             }
             
             .welcome-message h2 {
-                font-size: 1.8rem;
-                margin-bottom: 10px;
+                font-size: 2rem;
+                margin-bottom: 15px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
             }
             
             .welcome-message p {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
                 opacity: 0.9;
+                font-weight: 500;
             }
             
             /* Modal Styles */
             .modal {
-                display: none; /* Hidden by default */
-                position: fixed; /* Stay in place */
-                z-index: 1000; /* Sit on top */
+                display: none;
+                position: fixed;
+                z-index: 1000;
                 left: 0;
                 top: 0;
-                width: 100%; /* Full width */
-                height: 100%; /* Full height */
-                overflow: auto; /* Enable scroll if needed */
-                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(46, 139, 87, 0.8);
+                backdrop-filter: blur(5px);
                 padding-top: 60px;
             }
 
             .modal-content {
-                background-color: #fefefe;
-                margin: 5% auto; /* 15% from the top and centered */
-                padding: 20px;
-                border: 1px solid #888;
-                width: 80%; /* Could be more or less, depending on screen size */
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(15px);
+                margin: 5% auto;
+                padding: 30px;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                width: 80%;
                 max-width: 600px;
-                border-radius: 10px;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                border-radius: 25px;
+                box-shadow: 0 20px 60px rgba(46, 139, 87, 0.3);
                 position: relative;
             }
 
@@ -313,135 +390,161 @@ async def admin_portal(request: Request):
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 20px;
-                padding-bottom: 10px;
-                border-bottom: 2px solid #f0f0f0;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 3px solid #3CB371;
             }
 
             .modal-header h2 {
-                color: #333;
-                font-size: 1.8rem;
+                color: #2E8B57;
+                font-size: 2rem;
+                font-weight: 700;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
             }
 
             .close {
-                color: #aaa;
+                color: #2E8B57;
                 float: right;
-                font-size: 28px;
+                font-size: 32px;
                 font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
             }
 
             .close:hover,
             .close:focus {
-                color: black;
-                text-decoration: none;
-                cursor: pointer;
+                color: #3CB371;
+                transform: scale(1.1);
             }
 
             .modal-body {
-                padding: 20px;
+                padding: 25px;
             }
 
             .upload-area {
-                border: 2px dashed #ccc;
-                border-radius: 10px;
-                padding: 30px;
+                border: 3px dashed #3CB371;
+                border-radius: 20px;
+                padding: 40px;
                 text-align: center;
                 cursor: pointer;
-                transition: border-color 0.3s ease;
-                background-color: #f9f9f9;
-                margin-bottom: 20px;
+                transition: all 0.3s ease;
+                background: linear-gradient(135deg, rgba(46, 139, 87, 0.05) 0%, rgba(60, 179, 113, 0.05) 100%);
+                margin-bottom: 25px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .upload-area::before {
+                content: '🌿';
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                font-size: 1.5rem;
+                opacity: 0.3;
             }
 
             .upload-area:hover {
-                border-color: #667eea;
+                border-color: #2E8B57;
+                background: linear-gradient(135deg, rgba(46, 139, 87, 0.1) 0%, rgba(60, 179, 113, 0.1) 100%);
+                transform: translateY(-2px);
             }
 
             .upload-icon {
-                font-size: 4rem;
-                color: #667eea;
-                margin-bottom: 15px;
+                font-size: 4.5rem;
+                color: #2E8B57;
+                margin-bottom: 20px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
             }
 
             .upload-area p {
-                color: #666;
-                margin-bottom: 10px;
+                color: #34495e;
+                margin-bottom: 15px;
+                font-weight: 500;
             }
 
             .upload-btn {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
                 color: white;
                 border: none;
-                padding: 10px 20px;
-                border-radius: 8px;
-                cursor: pointer;
+                padding: 12px 25px;
+                border-radius: 25px;
                 font-size: 1rem;
-                font-weight: 500;
-                transition: background 0.3s ease;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 6px 20px rgba(46, 139, 87, 0.3);
             }
 
             .upload-btn:hover {
-                background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(46, 139, 87, 0.4);
             }
 
             .progress-bar {
                 width: 100%;
-                height: 10px;
-                background-color: #e0e0e0;
-                border-radius: 5px;
-                margin-bottom: 10px;
+                height: 12px;
+                background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+                border-radius: 10px;
+                margin-bottom: 15px;
                 overflow: hidden;
+                box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
             }
 
             .progress-fill {
                 height: 100%;
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-                border-radius: 5px;
-                width: 0%; /* Will be updated by JavaScript */
+                background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
+                border-radius: 10px;
+                width: 0%;
+                transition: width 0.3s ease;
+                box-shadow: 0 2px 4px rgba(46, 139, 87, 0.3);
             }
 
             #uploadProgress p {
-                color: #666;
-                font-size: 0.9rem;
+                color: #2E8B57;
+                font-size: 1rem;
                 text-align: center;
+                font-weight: 600;
             }
 
             #uploadResult {
-                padding: 15px;
-                border-radius: 8px;
-                margin-top: 15px;
+                padding: 20px;
+                border-radius: 15px;
+                margin-top: 20px;
                 text-align: center;
+                font-weight: 600;
             }
 
             #uploadResult.success {
-                background-color: #d4edda;
+                background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
                 color: #155724;
-                border: 1px solid #c3e6cb;
+                border: 2px solid #27ae60;
             }
 
             #uploadResult.error {
-                background-color: #f8d7da;
+                background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
                 color: #721c24;
-                border: 1px solid #f5c6cb;
+                border: 2px solid #e74c3c;
             }
 
             /* Uploads List Modal Styles */
             #uploadsList {
-                padding: 20px;
-                border-radius: 10px;
-                background-color: #f9f9f9;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 25px;
+                border-radius: 20px;
+                background: linear-gradient(135deg, rgba(46, 139, 87, 0.05) 0%, rgba(60, 179, 113, 0.05) 100%);
+                box-shadow: 0 8px 32px rgba(46, 139, 87, 0.15);
             }
 
             #uploadsList .loading-spinner {
-                margin: 0 auto 20px auto;
+                margin: 0 auto 25px auto;
             }
 
             #uploadsList p {
-                color: #666;
+                color: #2E8B57;
                 text-align: center;
-                padding: 10px;
+                padding: 15px;
+                font-weight: 600;
             }
-
+            
             .monthly-trend {
                 display: flex;
                 align-items: end;
@@ -478,6 +581,30 @@ async def admin_portal(request: Request):
                 50% { opacity: 0.5; }
                 100% { opacity: 1; }
             }
+            
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+            }
+            
+            @keyframes shimmer {
+                0% { background-position: -200px 0; }
+                100% { background-position: calc(200px + 100%) 0; }
+            }
+            
+            .floating-leaf {
+                position: fixed;
+                font-size: 2rem;
+                opacity: 0.1;
+                animation: float 6s ease-in-out infinite;
+                pointer-events: none;
+                z-index: -1;
+            }
+            
+            .floating-leaf:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+            .floating-leaf:nth-child(2) { top: 20%; right: 10%; animation-delay: 2s; }
+            .floating-leaf:nth-child(3) { bottom: 30%; left: 15%; animation-delay: 4s; }
+            .floating-leaf:nth-child(4) { bottom: 20%; right: 5%; animation-delay: 1s; }
             
             .data-source {
                 font-size: 0.8rem;
@@ -520,6 +647,12 @@ async def admin_portal(request: Request):
         </style>
     </head>
     <body>
+        <!-- Floating Nature Elements -->
+        <div class="floating-leaf">🍃</div>
+        <div class="floating-leaf">🌿</div>
+        <div class="floating-leaf">🌱</div>
+        <div class="floating-leaf">🍀</div>
+        
         <!-- Loading Screen -->
         <div class="loading-container" id="loadingContainer">
             <div class="loading-spinner"></div>
@@ -545,6 +678,15 @@ async def admin_portal(request: Request):
                 <div class="user-info">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <span style="font-weight: 500;" id="userName">Admin</span>
+                    <a href="/public-dashboard" target="_blank" style="
+                        background: #28a745;
+                        color: white;
+                        text-decoration: none;
+                        padding: 8px 16px;
+                        border-radius: 5px;
+                        font-size: 0.9rem;
+                        margin-right: 10px;
+                    ">🌐 Public View</a>
                     <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -561,10 +703,6 @@ async def admin_portal(request: Request):
                 <div class="stat-card">
                     <div class="stat-number" id="activeDonors">-</div>
                     <div class="stat-label">Active Donors</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="thisMonth">-</div>
-                    <div class="stat-label">This Month</div>
                 </div>
             </div>
             
@@ -748,7 +886,6 @@ async def admin_portal(request: Request):
                 document.getElementById('totalDonations').textContent = data.total_donations.toLocaleString();
                 document.getElementById('totalAmount').textContent = `$${data.total_amount.toLocaleString()}`;
                 document.getElementById('activeDonors').textContent = data.active_donors.toLocaleString();
-                document.getElementById('thisMonth').textContent = `$${data.this_month.toLocaleString()}`;
             }
             
             function updateRecentActivity(activities) {
@@ -809,7 +946,6 @@ async def admin_portal(request: Request):
                 document.getElementById('totalDonations').textContent = 'Error';
                 document.getElementById('totalAmount').textContent = 'Error';
                 document.getElementById('activeDonors').textContent = 'Error';
-                document.getElementById('thisMonth').textContent = 'Error';
                 document.getElementById('recentActivity').innerHTML = '<p>Error loading data. Please try refreshing.</p>';
                 document.getElementById('topDonors').innerHTML = '<p>Error loading data. Please try refreshing.</p>';
                 document.getElementById('monthlyTrend').innerHTML = '<p>Error loading data. Please try refreshing.</p>';
@@ -821,7 +957,6 @@ async def admin_portal(request: Request):
                 document.getElementById('totalDonations').textContent = '...';
                 document.getElementById('totalAmount').textContent = '...';
                 document.getElementById('activeDonors').textContent = '...';
-                document.getElementById('thisMonth').textContent = '...';
                 document.getElementById('recentActivity').innerHTML = '<p>Refreshing...</p>';
                 document.getElementById('topDonors').innerHTML = '<p>Refreshing...</p>';
                 document.getElementById('monthlyTrend').innerHTML = '<p>Refreshing...</p>';

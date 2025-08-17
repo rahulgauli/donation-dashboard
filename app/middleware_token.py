@@ -4,7 +4,7 @@ from app.security import verify_access_token
 
 
 PROTECTED_PREFIXES = ("/admin",)
-EXEMPT_PATHS = {"/healthz", "/auth/login", "/auth/validate", "/admin"}
+EXEMPT_PATHS = {"/healthz", "/auth/login", "/auth/validate", "/admin", "/public-dashboard"}
 
 class BearerAuthASGIMiddleware:
     """
