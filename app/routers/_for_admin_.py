@@ -1,0 +1,1 @@
+print("This will be the router for the admin endpoints")
