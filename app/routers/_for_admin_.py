@@ -283,6 +283,225 @@ async def admin_portal(request: Request):
                 opacity: 0.9;
             }
             
+            /* Modal Styles */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1000; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+                padding-top: 60px;
+            }
+
+            .modal-content {
+                background-color: #fefefe;
+                margin: 5% auto; /* 15% from the top and centered */
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%; /* Could be more or less, depending on screen size */
+                max-width: 600px;
+                border-radius: 10px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                position: relative;
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #f0f0f0;
+            }
+
+            .modal-header h2 {
+                color: #333;
+                font-size: 1.8rem;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .upload-area {
+                border: 2px dashed #ccc;
+                border-radius: 10px;
+                padding: 30px;
+                text-align: center;
+                cursor: pointer;
+                transition: border-color 0.3s ease;
+                background-color: #f9f9f9;
+                margin-bottom: 20px;
+            }
+
+            .upload-area:hover {
+                border-color: #667eea;
+            }
+
+            .upload-icon {
+                font-size: 4rem;
+                color: #667eea;
+                margin-bottom: 15px;
+            }
+
+            .upload-area p {
+                color: #666;
+                margin-bottom: 10px;
+            }
+
+            .upload-btn {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1rem;
+                font-weight: 500;
+                transition: background 0.3s ease;
+            }
+
+            .upload-btn:hover {
+                background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            }
+
+            .progress-bar {
+                width: 100%;
+                height: 10px;
+                background-color: #e0e0e0;
+                border-radius: 5px;
+                margin-bottom: 10px;
+                overflow: hidden;
+            }
+
+            .progress-fill {
+                height: 100%;
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                border-radius: 5px;
+                width: 0%; /* Will be updated by JavaScript */
+            }
+
+            #uploadProgress p {
+                color: #666;
+                font-size: 0.9rem;
+                text-align: center;
+            }
+
+            #uploadResult {
+                padding: 15px;
+                border-radius: 8px;
+                margin-top: 15px;
+                text-align: center;
+            }
+
+            #uploadResult.success {
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+
+            #uploadResult.error {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
+
+            /* Uploads List Modal Styles */
+            #uploadsList {
+                padding: 20px;
+                border-radius: 10px;
+                background-color: #f9f9f9;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            #uploadsList .loading-spinner {
+                margin: 0 auto 20px auto;
+            }
+
+            #uploadsList p {
+                color: #666;
+                text-align: center;
+                padding: 10px;
+            }
+
+            .monthly-trend {
+                display: flex;
+                align-items: end;
+                gap: 10px;
+                height: 100px;
+                margin-top: 15px;
+            }
+            
+            .trend-bar {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 3px 3px 0 0;
+                min-width: 20px;
+                position: relative;
+                transition: all 0.3s ease;
+            }
+            
+            .trend-bar:hover {
+                transform: scaleY(1.1);
+            }
+            
+            .trend-label {
+                font-size: 0.8rem;
+                color: #666;
+                text-align: center;
+                margin-top: 5px;
+            }
+            
+            .loading-pulse {
+                animation: pulse 1.5s ease-in-out infinite;
+            }
+            
+            @keyframes pulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.5; }
+                100% { opacity: 1; }
+            }
+            
+            .data-source {
+                font-size: 0.8rem;
+                color: #999;
+                text-align: center;
+                margin-top: 10px;
+                font-style: italic;
+            }
+            
+            .refresh-btn {
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.8rem;
+                margin-left: 10px;
+            }
+            
+            .refresh-btn:hover {
+                background: #218838;
+            }
+
             @media (max-width: 768px) {
                 .dashboard-container {
                     padding: 10px;
@@ -332,19 +551,19 @@ async def admin_portal(request: Request):
             
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number">1,234</div>
+                    <div class="stat-number" id="totalDonations">-</div>
                     <div class="stat-label">Total Donations</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">$45,678</div>
+                    <div class="stat-number" id="totalAmount">-</div>
                     <div class="stat-label">Total Amount</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">567</div>
-                    <div class="stat-label">Active Users</div>
+                    <div class="stat-number" id="activeDonors">-</div>
+                    <div class="stat-label">Active Donors</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">89</div>
+                    <div class="stat-number" id="thisMonth">-</div>
                     <div class="stat-label">This Month</div>
                 </div>
             </div>
@@ -352,21 +571,85 @@ async def admin_portal(request: Request):
             <div class="content-section">
                 <h3 class="section-title">Quick Actions</h3>
                 <div class="action-buttons">
-                    <button class="action-btn">View All Donations</button>
-                    <button class="action-btn secondary">Manage Users</button>
-                    <button class="action-btn success">Generate Reports</button>
-                    <button class="action-btn warning">System Settings</button>
+                    <button class="action-btn" onclick="openUploadModal()">Upload Excel File</button>
+                    <button class="action-btn secondary" onclick="viewUploads()">View Uploads</button>
+                    <button class="action-btn success" onclick="downloadTemplate()">Download Template</button>
+                    <button class="action-btn warning" onclick="refreshDashboard()">Refresh Data</button>
+                </div>
+            </div>
+            
+            <!-- File Upload Modal -->
+            <div id="uploadModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Upload Excel File</h2>
+                        <span class="close" onclick="closeUploadModal()">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-bottom: 20px; text-align: center;">
+                            <p style="color: #666; margin-bottom: 10px;">Need a template? Download our sample Excel file:</p>
+                            <button onclick="downloadTemplate()" style="
+                                background: #28a745;
+                                color: white;
+                                border: none;
+                                padding: 8px 16px;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                font-size: 0.9rem;
+                            ">📥 Download Template</button>
+                        </div>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📁</div>
+                            <p>Drag and drop your Excel file here</p>
+                            <p>or</p>
+                            <input type="file" id="fileInput" accept=".xlsx,.xls" style="display: none;">
+                            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
+                        </div>
+                        <div id="uploadProgress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <p id="uploadStatus">Uploading...</p>
+                        </div>
+                        <div id="uploadResult" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Uploads List Modal -->
+            <div id="uploadsModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Uploaded Files</h2>
+                        <span class="close" onclick="closeUploadsModal()">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div id="uploadsList">
+                            <div class="loading-spinner"></div>
+                            <p>Loading files...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <div class="content-section">
                 <h3 class="section-title">Recent Activity</h3>
-                <div style="color: #666; line-height: 1.6;">
-                    <p>• New donation received: $500 from John Doe</p>
-                    <p>• User registration: jane.smith@example.com</p>
-                    <p>• Monthly report generated successfully</p>
-                    <p>• System backup completed</p>
-                    <p>• New campaign created: "Summer Fundraiser"</p>
+                <div id="recentActivity" style="color: #666; line-height: 1.6;">
+                    <p>Loading recent activity...</p>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <h3 class="section-title">Top Donors</h3>
+                <div id="topDonors" style="color: #666; line-height: 1.6;">
+                    <p>Loading top donors...</p>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <h3 class="section-title">Monthly Trend</h3>
+                <div id="monthlyTrend" style="color: #666; line-height: 1.6;">
+                    <p>Loading monthly trend...</p>
                 </div>
             </div>
         </div>
@@ -424,6 +707,9 @@ async def admin_portal(request: Request):
                             card.style.transform = 'translateY(0)';
                         }, index * 100);
                     });
+                    
+                    // Load dashboard data
+                    loadDashboardData();
                 })
                 .catch(error => {
                     console.error('Authentication error:', error);
@@ -434,6 +720,113 @@ async def admin_portal(request: Request):
                 });
             });
             
+            // Dashboard Data Functions
+            function loadDashboardData() {
+                const token = localStorage.getItem('authToken');
+                
+                fetch('/dashboard-data', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateDashboardStats(data);
+                    updateRecentActivity(data.recent_activity);
+                    updateTopDonors(data.top_donors);
+                    updateMonthlyTrend(data.monthly_trend);
+                })
+                .catch(error => {
+                    console.error('Error loading dashboard data:', error);
+                    showDashboardError();
+                });
+            }
+            
+            function updateDashboardStats(data) {
+                document.getElementById('totalDonations').textContent = data.total_donations.toLocaleString();
+                document.getElementById('totalAmount').textContent = `$${data.total_amount.toLocaleString()}`;
+                document.getElementById('activeDonors').textContent = data.active_donors.toLocaleString();
+                document.getElementById('thisMonth').textContent = `$${data.this_month.toLocaleString()}`;
+            }
+            
+            function updateRecentActivity(activities) {
+                const container = document.getElementById('recentActivity');
+                if (activities.length === 0) {
+                    container.innerHTML = '<p>No recent activity found.</p>';
+                    return;
+                }
+                
+                let html = '';
+                activities.forEach(activity => {
+                    html += `<p>• ${activity.message} (${activity.date})</p>`;
+                });
+                container.innerHTML = html;
+            }
+            
+            function updateTopDonors(donors) {
+                const container = document.getElementById('topDonors');
+                if (donors.length === 0) {
+                    container.innerHTML = '<p>No donor data available.</p>';
+                    return;
+                }
+                
+                let html = '';
+                donors.forEach((donor, index) => {
+                    const rank = index + 1;
+                    const emoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '🏅';
+                    html += `<p>${emoji} ${donor.name}: $${donor.total.toLocaleString()}</p>`;
+                });
+                container.innerHTML = html;
+            }
+            
+            function updateMonthlyTrend(trend) {
+                const container = document.getElementById('monthlyTrend');
+                if (trend.length === 0) {
+                    container.innerHTML = '<p>No trend data available.</p>';
+                    return;
+                }
+                
+                // Find the maximum amount for scaling
+                const maxAmount = Math.max(...trend.map(month => month.amount));
+                
+                let html = '<div class="monthly-trend">';
+                trend.forEach(month => {
+                    const height = maxAmount > 0 ? (month.amount / maxAmount) * 80 : 0;
+                    html += `
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <div class="trend-bar" style="height: ${height}px; width: 30px;" title="${month.month}: $${month.amount.toLocaleString()}"></div>
+                            <div class="trend-label">${month.month}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            }
+            
+            function showDashboardError() {
+                document.getElementById('totalDonations').textContent = 'Error';
+                document.getElementById('totalAmount').textContent = 'Error';
+                document.getElementById('activeDonors').textContent = 'Error';
+                document.getElementById('thisMonth').textContent = 'Error';
+                document.getElementById('recentActivity').innerHTML = '<p>Error loading data. Please try refreshing.</p>';
+                document.getElementById('topDonors').innerHTML = '<p>Error loading data. Please try refreshing.</p>';
+                document.getElementById('monthlyTrend').innerHTML = '<p>Error loading data. Please try refreshing.</p>';
+            }
+            
+            function refreshDashboard() {
+                loadDashboardData();
+                // Show a brief loading state
+                document.getElementById('totalDonations').textContent = '...';
+                document.getElementById('totalAmount').textContent = '...';
+                document.getElementById('activeDonors').textContent = '...';
+                document.getElementById('thisMonth').textContent = '...';
+                document.getElementById('recentActivity').innerHTML = '<p>Refreshing...</p>';
+                document.getElementById('topDonors').innerHTML = '<p>Refreshing...</p>';
+                document.getElementById('monthlyTrend').innerHTML = '<p>Refreshing...</p>';
+            }
+            
             function logout() {
                 // Clear any stored tokens
                 localStorage.removeItem('authToken');
@@ -441,6 +834,234 @@ async def admin_portal(request: Request):
                 
                 // Redirect to login page
                 window.location.href = '/';
+            }
+
+            // Modal Functions
+            function openUploadModal() {
+                document.getElementById('uploadModal').style.display = 'block';
+                setupFileUpload();
+            }
+
+            function closeUploadModal() {
+                document.getElementById('uploadModal').style.display = 'none';
+                resetUploadForm();
+            }
+
+            function openUploadsModal() {
+                document.getElementById('uploadsModal').style.display = 'block';
+                loadUploads();
+            }
+
+            function closeUploadsModal() {
+                document.getElementById('uploadsModal').style.display = 'none';
+            }
+
+            function viewUploads() {
+                openUploadsModal();
+            }
+
+            // File Upload Functions
+            function setupFileUpload() {
+                const uploadArea = document.getElementById('uploadArea');
+                const fileInput = document.getElementById('fileInput');
+
+                // Drag and drop functionality
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#667eea';
+                    uploadArea.style.backgroundColor = '#f0f4ff';
+                });
+
+                uploadArea.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#ccc';
+                    uploadArea.style.backgroundColor = '#f9f9f9';
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#ccc';
+                    uploadArea.style.backgroundColor = '#f9f9f9';
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFileUpload(files[0]);
+                    }
+                });
+
+                // File input change
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleFileUpload(e.target.files[0]);
+                    }
+                });
+            }
+
+            function handleFileUpload(file) {
+                // Validate file type
+                const fileName = file.name.toLowerCase();
+                if (!fileName.endsWith('.xlsx') && !fileName.endsWith('.xls')) {
+                    showUploadResult('Please select a valid Excel file (.xlsx or .xls)', 'error');
+                    return;
+                }
+
+                // Show progress
+                document.getElementById('uploadArea').style.display = 'none';
+                document.getElementById('uploadProgress').style.display = 'block';
+                document.getElementById('uploadResult').style.display = 'none';
+
+                // Simulate progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 10;
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                        uploadFile(file);
+                    }
+                }, 200);
+            }
+
+            function uploadFile(file) {
+                const token = localStorage.getItem('authToken');
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch('/upload-excel', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        showUploadResult(`✅ ${data.message}<br>📁 File: ${data.filename}<br>📊 Records: ${data.records_count}`, 'success');
+                        
+                        // Refresh dashboard data after successful upload
+                        setTimeout(() => {
+                            if (typeof loadDashboardData === 'function') {
+                                loadDashboardData();
+                            }
+                        }, 1000);
+                    } else {
+                        showUploadResult('❌ Upload failed: ' + (data.detail || 'Unknown error'), 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Upload error:', error);
+                    showUploadResult('❌ Upload failed: Network error', 'error');
+                })
+                .finally(() => {
+                    document.getElementById('uploadProgress').style.display = 'none';
+                });
+            }
+
+            function showUploadResult(message, type) {
+                const resultDiv = document.getElementById('uploadResult');
+                resultDiv.innerHTML = message;
+                resultDiv.className = type;
+                resultDiv.style.display = 'block';
+            }
+
+            function resetUploadForm() {
+                document.getElementById('uploadArea').style.display = 'block';
+                document.getElementById('uploadProgress').style.display = 'none';
+                document.getElementById('uploadResult').style.display = 'none';
+                document.getElementById('fileInput').value = '';
+                document.getElementById('progressFill').style.width = '0%';
+            }
+
+            // Load Uploads Function
+            function loadUploads() {
+                const uploadsList = document.getElementById('uploadsList');
+                uploadsList.innerHTML = '<div class="loading-spinner"></div><p>Loading files...</p>';
+
+                const token = localStorage.getItem('authToken');
+
+                fetch('/list-uploads', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.files && data.files.length > 0) {
+                        displayUploads(data.files);
+                    } else {
+                        uploadsList.innerHTML = '<p>No files uploaded yet.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading uploads:', error);
+                    uploadsList.innerHTML = '<p>Error loading files. Please try again.</p>';
+                });
+            }
+
+            function displayUploads(files) {
+                const uploadsList = document.getElementById('uploadsList');
+                let html = '<div style="max-height: 400px; overflow-y: auto;">';
+                
+                files.forEach(file => {
+                    const fileSize = formatFileSize(file.size);
+                    const createdDate = new Date(file.created).toLocaleString();
+                    
+                    html += `
+                        <div style="
+                            background: white;
+                            padding: 15px;
+                            margin-bottom: 10px;
+                            border-radius: 8px;
+                            border-left: 4px solid #667eea;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        ">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="margin: 0 0 5px 0; color: #333;">${file.filename}</h4>
+                                    <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                                        📅 Created: ${createdDate}<br>
+                                        📏 Size: ${fileSize}
+                                    </p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <button onclick="viewFile('${file.filename}')" style="
+                                        background: #667eea;
+                                        color: white;
+                                        border: none;
+                                        padding: 5px 10px;
+                                        border-radius: 4px;
+                                        cursor: pointer;
+                                        font-size: 0.8rem;
+                                    ">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                uploadsList.innerHTML = html;
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            function viewFile(filename) {
+                alert(`Viewing file: ${filename}\n\nThis would open the file viewer in a real application.`);
+            }
+
+            function downloadTemplate() {
+                const token = localStorage.getItem('authToken');
+                const url = `/download-template?token=${token}`;
+                window.location.href = url;
             }
         </script>
     </body>

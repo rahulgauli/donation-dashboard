@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
@@ -7,10 +7,14 @@ from fastapi.responses import HTMLResponse
 from app.routers._for_admin_ import admin_router
 
 from app.middleware_token import BearerAuthASGIMiddleware
-from app.security import creds, create_access_token
+from app.security import creds, create_access_token, verify_access_token
 from typing import Optional
 from fastapi import Header
-from app.security import verify_access_token
+import pandas as pd
+import json
+import uuid
+from datetime import datetime, timedelta
+import os
 
 
 app = FastAPI(
@@ -92,6 +96,261 @@ async def validate_token(authorization: Optional[str] = Header(None)):
         raise HTTPException(status_code=401, detail="Invalid token payload")
     
     return {"valid": True, "user": user}
+
+@app.post("/upload-excel")
+async def upload_excel(file: UploadFile = File(...), authorization: Optional[str] = Header(None)):
+    """Upload an Excel file and convert it to JSON."""
+    # Validate token
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+    
+    token = authorization.split(" ", 1)[1].strip()
+    payload = verify_access_token(token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Check file type
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="Only Excel files (.xlsx, .xls) are allowed")
+    
+    try:
+        # Read the Excel file
+        df = pd.read_excel(file.file)
+        
+        # Convert DataFrame to JSON
+        json_data = df.to_dict(orient='records')
+        
+        # Create unique filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        unique_id = str(uuid.uuid4())[:8]
+        filename = f"donations_{timestamp}_{unique_id}.json"
+        
+        # Create data directory if it doesn't exist
+        data_dir = "data"
+        os.makedirs(data_dir, exist_ok=True)
+        
+        # Save JSON file
+        file_path = os.path.join(data_dir, filename)
+        with open(file_path, 'w') as f:
+            json.dump(json_data, f, indent=2, default=str)
+        
+        return {
+            "message": "File uploaded successfully",
+            "filename": filename,
+            "records_count": len(json_data),
+            "file_path": file_path
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
+@app.get("/list-uploads")
+async def list_uploads(authorization: Optional[str] = Header(None)):
+    """List all uploaded JSON files."""
+    # Validate token
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+    
+    token = authorization.split(" ", 1)[1].strip()
+    payload = verify_access_token(token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    try:
+        data_dir = "data"
+        if not os.path.exists(data_dir):
+            return {"files": []}
+        
+        files = []
+        for filename in os.listdir(data_dir):
+            if filename.endswith('.json'):
+                file_path = os.path.join(data_dir, filename)
+                file_stats = os.stat(file_path)
+                files.append({
+                    "filename": filename,
+                    "size": file_stats.st_size,
+                    "created": datetime.fromtimestamp(file_stats.st_ctime).isoformat(),
+                    "modified": datetime.fromtimestamp(file_stats.st_mtime).isoformat()
+                })
+        
+        # Sort by creation date (newest first)
+        files.sort(key=lambda x: x["created"], reverse=True)
+        
+        return {"files": files}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listing files: {str(e)}")
+
+@app.get("/download-template")
+async def download_template():
+    """Download a sample Excel template for donations."""
+    try:
+        # Create sample data
+        sample_data = {
+            'Donor_Name': ['John Doe', 'Jane Smith', 'Bob Johnson', 'Alice Brown'],
+            'Email': ['john@example.com', 'jane@example.com', 'bob@example.com', 'alice@example.com'],
+            'Phone': ['555-0101', '555-0102', '555-0103', '555-0104'],
+            'Amount': [100.00, 250.50, 75.25, 500.00],
+            'Payment_Method': ['Zelle', 'Zelle', 'Zelle', 'Zelle'],
+            'Transaction_ID': ['Z123456789', 'Z987654321', 'Z456789123', 'Z789123456'],
+            'Date': ['2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18'],
+            'Notes': ['Monthly donation', 'One-time gift', 'In memory of...', 'Campaign donation']
+        }
+        
+        # Create DataFrame
+        df = pd.DataFrame(sample_data)
+        
+        # Create template directory if it doesn't exist
+        template_dir = "templates"
+        os.makedirs(template_dir, exist_ok=True)
+        
+        # Save as Excel file
+        template_path = os.path.join(template_dir, "donations_template.xlsx")
+        df.to_excel(template_path, index=False, engine='openpyxl')
+        
+        # Read the file and return it
+        with open(template_path, 'rb') as f:
+            content = f.read()
+        
+        from fastapi.responses import Response
+        return Response(
+            content=content,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": "attachment; filename=donations_template.xlsx"}
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating template: {str(e)}")
+
+@app.get("/dashboard-data")
+async def get_dashboard_data(authorization: Optional[str] = Header(None)):
+    """Get dashboard data from the latest uploaded JSON file."""
+    # Validate token
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+    
+    token = authorization.split(" ", 1)[1].strip()
+    payload = verify_access_token(token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    try:
+        data_dir = "data"
+        if not os.path.exists(data_dir):
+            return {
+                "total_donations": 0,
+                "total_amount": 0,
+                "active_donors": 0,
+                "this_month": 0,
+                "recent_activity": [],
+                "top_donors": [],
+                "monthly_trend": []
+            }
+        
+        # Get the most recent JSON file
+        json_files = [f for f in os.listdir(data_dir) if f.endswith('.json')]
+        if not json_files:
+            return {
+                "total_donations": 0,
+                "total_amount": 0,
+                "active_donors": 0,
+                "this_month": 0,
+                "recent_activity": [],
+                "top_donors": [],
+                "monthly_trend": []
+            }
+        
+        # Sort by creation time (newest first)
+        json_files.sort(key=lambda x: os.path.getctime(os.path.join(data_dir, x)), reverse=True)
+        latest_file = json_files[0]
+        
+        # Read the JSON file
+        with open(os.path.join(data_dir, latest_file), 'r') as f:
+            donations_data = json.load(f)
+        
+        if not donations_data:
+            return {
+                "total_donations": 0,
+                "total_amount": 0,
+                "active_donors": 0,
+                "this_month": 0,
+                "recent_activity": [],
+                "top_donors": [],
+                "monthly_trend": []
+            }
+        
+        # Process the data
+        total_donations = len(donations_data)
+        total_amount = sum(float(donation.get('Amount', 0)) for donation in donations_data)
+        active_donors = len(set(donation.get('Donor_Name', '') for donation in donations_data if donation.get('Donor_Name')))
+        
+        # Calculate this month's donations
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+        this_month = 0
+        for donation in donations_data:
+            try:
+                donation_date = datetime.strptime(donation.get('Date', ''), '%Y-%m-%d')
+                if donation_date.month == current_month and donation_date.year == current_year:
+                    this_month += float(donation.get('Amount', 0))
+            except:
+                continue
+        
+        # Get recent activity (last 5 donations)
+        recent_activity = []
+        for donation in donations_data[-5:]:
+            recent_activity.append({
+                "type": "donation",
+                "message": f"${donation.get('Amount', 0)} from {donation.get('Donor_Name', 'Unknown')}",
+                "date": donation.get('Date', ''),
+                "amount": float(donation.get('Amount', 0))
+            })
+        
+        # Get top donors
+        donor_totals = {}
+        for donation in donations_data:
+            donor_name = donation.get('Donor_Name', 'Unknown')
+            amount = float(donation.get('Amount', 0))
+            donor_totals[donor_name] = donor_totals.get(donor_name, 0) + amount
+        
+        top_donors = sorted(donor_totals.items(), key=lambda x: x[1], reverse=True)[:5]
+        top_donors = [{"name": name, "total": total} for name, total in top_donors]
+        
+        # Calculate monthly trend (last 6 months)
+        monthly_trend = []
+        for i in range(6):
+            month_date = datetime.now().replace(day=1) - timedelta(days=30*i)
+            month_total = 0
+            for donation in donations_data:
+                try:
+                    donation_date = datetime.strptime(donation.get('Date', ''), '%Y-%m-%d')
+                    if donation_date.month == month_date.month and donation_date.year == month_date.year:
+                        month_total += float(donation.get('Amount', 0))
+                except:
+                    continue
+            monthly_trend.append({
+                "month": month_date.strftime('%b %Y'),
+                "amount": month_total
+            })
+        
+        monthly_trend.reverse()  # Show oldest to newest
+        
+        return {
+            "total_donations": total_donations,
+            "total_amount": round(total_amount, 2),
+            "active_donors": active_donors,
+            "this_month": round(this_month, 2),
+            "recent_activity": recent_activity,
+            "top_donors": top_donors,
+            "monthly_trend": monthly_trend,
+            "data_source": latest_file
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing dashboard data: {str(e)}")
 
 @app.get("/healthz")
 async def health_check():
