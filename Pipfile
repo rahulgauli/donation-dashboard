@@ -5,9 +5,15 @@ python_version = "3.12"
 fastapi = "*"
 uvicorn = "*"
 sqlalchemy = "*"
+pydantic = "*"
+bcrypt = "*"
+python-jose = "*"
 
 [dev-packages]
 pytest = "*"
 pytest-asyncio = "*"
 httpx = "*"
 
+[scripts]
+start = "uvicorn app.main:app --reload"
+test = "pytest"
